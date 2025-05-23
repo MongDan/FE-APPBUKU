@@ -8,6 +8,7 @@ import KategoriPage from "./pages/KategoriPage";
 import BukuKategoriPage from "./pages/BukuKategoriPage";
 import LandingPageAdmin from "./pages/LandingPageAdmin";
 import LandingPageUser from "./pages/LandingPageUser";
+import AdminRoute from "./Route/AdminRoute";
 function App() {
   return (
     <Router>

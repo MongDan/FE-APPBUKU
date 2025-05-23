@@ -15,7 +15,7 @@ const BookForm = ({
     pengarang: "",
     penerbit: "",
     tahunTerbit: "",
-    statusBukuId: 1, // Default to available (1)
+    statusBukuId: 1,
   });
 
   useEffect(() => {

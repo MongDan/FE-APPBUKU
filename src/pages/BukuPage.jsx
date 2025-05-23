@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
 import { fetchBooks, fetchStatusOptions } from "../services/api";
 import BookForm from "../components/BukuForm";
@@ -8,7 +8,6 @@ import ErrorMessage from "../components/ErrorMessage";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const BukuPage = () => {
-  const location = useLocation();
   const [books, setBooks] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,7 @@ const BukuPage = () => {
   // Kamu bisa ganti logika ini sesuai kebutuhan autentikasi
   useEffect(() => {
     // Contoh set role admin langsung (untuk testing)
-    setUserRole("ADMIN"); 
+    setUserRole("ADMIN");
   }, []);
 
   useEffect(() => {
@@ -43,13 +42,11 @@ const BukuPage = () => {
     }
   };
 
-/*************  ✨ Windsurf Command ⭐  *************/
   /**
    * Loads status options from the server and updates the state.
    * If fetching fails, sets an error message.
    */
 
-/*******  9cddfb5b-ecc1-4347-9e02-37c86549d8e1  *******/
   const loadStatusOptions = async () => {
     try {
       const options = await fetchStatusOptions();

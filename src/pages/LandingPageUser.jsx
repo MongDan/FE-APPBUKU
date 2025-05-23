@@ -3,12 +3,19 @@ import { useEffect, useState } from "react";
 
 function LandingPageUser() {
   const [books, setBooks] = useState([]);
-  const [userName, setUserName] = useState("User");
+  const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+      setUserName(userName);
+    }
+  }, []);
+
+  useEffect(() => {
     fetch("http://localhost:3000/buku", {
-      credentials: "include",
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((res) => {
@@ -50,7 +57,7 @@ function LandingPageUser() {
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto">
         <h1 className="text-3xl font-bold mb-6 text-emerald-900">
-          Selamat Datang, {userName}
+          Selamat Datang, {userName.split("@")[0]}
         </h1>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-4">

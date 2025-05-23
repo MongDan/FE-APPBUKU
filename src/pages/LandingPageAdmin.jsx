@@ -1,14 +1,57 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 
 function LandingPageAdmin() {
-  const [adminName, setAdminName] = useState("Admin");
+  const [adminName, setAdminName] = useState("");
+  const [activeSection, setActiveSection] = useState("dashboard");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const nameAdmin = localStorage.getItem("adminName");
+    setAdminName(nameAdmin);
+  }, []);
 
   const handleLogout = () => {
     document.cookie = "token=; Max-Age=0; path=/;";
+    document.removeItem("adminName");
     navigate("/login");
   };
+
+  function FormBuku() {
+    return (
+      <div className="bg-white p-6 rounded shadow p-1/2">
+        <h2 className="text-xl font-bold mb-4">Form Buku</h2>
+        <form className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Judul Buku"
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            placeholder="Pengarang"
+            className="p-2 border rounded"
+          />
+          <input
+            type="text"
+            placeholder="Penerbit"
+            className="p-2 border rounded"
+          />
+          <input
+            type="number"
+            placeholder="Tahun Terbit"
+            className="p-2 border rounded"
+          />
+          <button
+            type="submit"
+            className="bg-emerald-700 text-white py-2 rounded hover:bg-emerald-600"
+          >
+            Simpan
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -18,22 +61,28 @@ function LandingPageAdmin() {
           <h2 className="text-2xl font-bold p-6">BookNest Admin</h2>
           <nav className="flex flex-col gap-2 p-4">
             <button
-              onClick={() => navigate("/buku")}
-              className="text-left p-2 hover:bg-emerald-700 rounded"
+              onClick={() => setActiveSection("dashboard")}
+              className="text-left p-2 hover:bg-emerald-700 rounded "
             >
-              📚 Kelola Buku
+              🏡 Dashboard
             </button>
             <button
-              onClick={() => navigate("/kategori")}
+              onClick={() => setActiveSection("formBuku")}
               className="text-left p-2 hover:bg-emerald-700 rounded"
             >
-              🗂️ Kelola Kategori
+              📚 Buku
+            </button>
+            <button
+              onClick={() => setActiveSection("kategori")}
+              className="text-left p-2 hover:bg-emerald-700 rounded"
+            >
+              🗂️ Kategori
             </button>
             <button
               onClick={() => navigate("/statusBuku")}
               className="text-left p-2 hover:bg-emerald-700 rounded"
             >
-              📌 Kelola Status Buku
+              📌 Status Buku
             </button>
           </nav>
         </div>
@@ -49,23 +98,48 @@ function LandingPageAdmin() {
 
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-4">Selamat Datang, {adminName}</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded shadow text-center">
-            <h2 className="text-xl font-bold mb-2">📚 Buku</h2>
-            <p className="text-gray-600">Kelola daftar buku yang tersedia.</p>
-          </div>
-          <div className="bg-white p-6 rounded shadow text-center">
-            <h2 className="text-xl font-bold mb-2">🗂️ Kategori</h2>
-            <p className="text-gray-600">Atur kategori buku.</p>
-          </div>
-          <div className="bg-white p-6 rounded shadow text-center">
-            <h2 className="text-xl font-bold mb-2">📌 Status Buku</h2>
-            <p className="text-gray-600">
-              Tentukan status (tersedia, dipinjam, dll).
-            </p>
-          </div>
-        </div>
+        {activeSection === "dashboard" && (
+          <>
+            <h1 className="text-3xl font-bold mb-4">  
+              Selamat Datang, {adminName.split("@")[0]}
+            </h1>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-6 rounded shadow text-center">
+                <h2 className="text-xl font-bold mb-2">📚 Buku</h2>
+                <p className="text-gray-600">
+                  Kelola daftar buku yang tersedia.
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded shadow text-center">
+                <h2 className="text-xl font-bold mb-2">🗂️ Kategori</h2>
+                <p className="text-gray-600">Atur kategori buku.</p>
+              </div>
+              <div className="bg-white p-6 rounded shadow text-center">
+                <h2 className="text-xl font-bold mb-2">📌 Status Buku</h2>
+                <p className="text-gray-600">
+                  Tentukan status (tersedia, dipinjam, dll).
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeSection === "formBuku" && (
+          <>
+            <FormBuku />
+          </>
+        )}
+
+        {activeSection === "kategori" && (
+          <>
+            <h1 className="text-3xl font-bold mb-4">Kategori</h1>
+            <div className="bg-white p-6 rounded shadow">
+              <p className="text-gray-600">
+                (Halaman kategori dalam pengembangan)
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
