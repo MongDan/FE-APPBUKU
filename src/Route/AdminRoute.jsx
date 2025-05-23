@@ -1,5 +1,5 @@
 // src/components/AdminRoute.js
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 const AdminRoute = ({ children }) => {
   const role = localStorage.getItem("role"); // atau dari context

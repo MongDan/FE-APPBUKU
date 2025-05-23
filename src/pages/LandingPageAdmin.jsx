@@ -1,18 +1,10 @@
-<<<<<<< HEAD
 import { useNavigate } from "react-router";
-=======
-import { useNavigate, Link } from "react-router-dom";
->>>>>>> 5579d1b115b656fe5fb5edb7776e0ac32fef0069
 import { useEffect, useState } from "react";
 
 
 function LandingPageAdmin() {
-<<<<<<< HEAD
   const [adminName, setAdminName] = useState("");
   const [activeSection, setActiveSection] = useState("dashboard");
-=======
-  const [adminName, setAdminName] = useState(" ");
->>>>>>> 5579d1b115b656fe5fb5edb7776e0ac32fef0069
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,7 +99,6 @@ function LandingPageAdmin() {
 
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto">
-<<<<<<< HEAD
         {activeSection === "dashboard" && (
           <>
             <h1 className="text-3xl font-bold mb-4">  
@@ -150,33 +141,6 @@ function LandingPageAdmin() {
             </div>
           </>
         )}
-=======
-        <h1 className="text-3xl font-bold mb-4">Selamat Datang, {adminName}</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link to="/buku">
-            <div className="bg-white p-6 rounded shadow text-center hover:bg-gray-100 cursor-pointer">
-              <h2 className="text-xl font-bold mb-2">📚 Buku</h2>
-              <p className="text-gray-600">Kelola daftar buku yang tersedia.</p>
-            </div>
-          </Link>
-
-          <Link to="/kategori">
-            <div className="bg-white p-6 rounded shadow text-center hover:bg-gray-100 cursor-pointer">
-              <h2 className="text-xl font-bold mb-2">🗂️ Kategori</h2>
-              <p className="text-gray-600">Atur kategori buku.</p>
-            </div>
-          </Link>
-
-          <Link to="/statusbuku">
-            <div className="bg-white p-6 rounded shadow text-center hover:bg-gray-100 cursor-pointer">
-              <h2 className="text-xl font-bold mb-2">📌 Status Buku</h2>
-              <p className="text-gray-600">
-                Tentukan status (tersedia, dipinjam, dll).
-              </p>
-            </div>
-          </Link>
-        </div>
->>>>>>> 5579d1b115b656fe5fb5edb7776e0ac32fef0069
       </div>
     </div>
   );

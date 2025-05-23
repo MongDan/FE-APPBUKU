@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 import bgImage from "../assets/bg-register.png";
-import logo from "/logo.png" 
+import logo from "/logo.png";
 import { motion } from "framer-motion";
-
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -27,9 +26,9 @@ export default function Register() {
         method: "POST",
         credentials: "include",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(bodyData),
+        body: JSON.stringify(bodyData)
       });
 
       const data = await res.json();
@@ -54,7 +53,7 @@ export default function Register() {
         alt="Register Background"
         className="absolute w-full h-full object-cover -z-10"
         style={{
-          objectPosition: "center right",
+          objectPosition: "center right"
         }}
       />
 
