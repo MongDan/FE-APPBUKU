@@ -4,6 +4,14 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+// Tentukan URL API berdasarkan environment
+// Untuk Vite, Anda bisa menggunakan variabel env seperti import.meta.env.VITE_API_URL
+// Untuk Create React App, process.env.REACT_APP_API_URL
+// Ini adalah cara sederhana:
+const API_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:3000" // URL Backend Development Anda (sesuai port di index.ts)
+  : "https://be-appbuku-production.up.railway.app"; // URL Backend Produksi Anda
+
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,41 +20,71 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage(""); // Reset pesan setiap kali submit
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
-        credentials: "include",
+        credentials: "include", // Penting untuk mengirim dan menerima cookie lintas domain
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Accept: "application/json" // Baik untuk ditambahkan
         },
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json();
+      const responseData = await res.json(); // Selalu coba parse JSON respons
 
-      if (res.ok) {
-        setMessage(data.message);
-        document.cookie = `token=${data.token}; path=/; max-age=3600`;
-        console.log("Token disimpan:", document.cookie);
-        localStorage.setItem("adminName", data.data.email);
-        localStorage.setItem("userName", data.data.email);
+      if (!res.ok) {
+        setMessage(responseData.message || `Login gagal (HTTP ${res.status})`);
+        return;
+      }
 
-        const role = data.data.role;
-        if (role === "ADMIN") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/user/home");
-        }
+      // Jika res.ok, login berhasil
+      setMessage(responseData.message || "Login berhasil!");
+
+      // Simpan informasi user dari respons body
+      // Token dari body bisa digunakan jika diperlukan (misalnya untuk header Auth di request lain)
+      if (responseData.data && responseData.data.token) {
+        localStorage.setItem("authToken", responseData.data.token); // Contoh penyimpanan token dari body
+      }
+      if (responseData.data) {
+        localStorage.setItem("adminName", responseData.data.email); // Sesuaikan key jika perlu
+        localStorage.setItem("userName", responseData.data.email); // Sesuaikan key jika perlu
+        localStorage.setItem("userRole", responseData.data.role);
+      }
+
+      // Cookie HttpOnly sudah di-set oleh server dan akan dikirim otomatis oleh browser
+      // Tidak perlu: document.cookie = ...
+
+      console.log(
+        "Login berhasil, server seharusnya sudah set cookie HttpOnly."
+      );
+      console.log("Data dari server:", responseData.data);
+
+      const role = responseData.data?.role; // Gunakan optional chaining
+      if (role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else if (role === "USER" || role) {
+        // Asumsikan role USER atau role lain yang valid
+        navigate("/user/home");
+      } else {
+        // Role tidak diketahui, mungkin tetap di halaman login atau halaman error
+        setMessage("Role pengguna tidak diketahui, tidak dapat mengarahkan.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      setMessage("Terjadi kesalahan pada server.");
+      console.error("Error saat fetch:", error);
+      // Cek apakah error karena network atau lainnya
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        setMessage("Gagal terhubung ke server. Periksa koneksi atau URL API.");
+      } else {
+        setMessage("Terjadi kesalahan pada aplikasi.");
+      }
     }
   };
 
   return (
-    <div className="relative overflow-hidden min-h-screen">
+    <div className="relative overflow-hidden min-h-screen raleway-general">
       <img
         src={bgImage}
         alt="Background"
@@ -60,12 +98,12 @@ function LoginPage() {
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="hidden sm:flex w-full lg:w-1/2 flex-col justify-center p-6 md:p-12 lg:pl-20 text-white"
+          className="hidden sm:flex w-full lg:w-1/2 flex-col justify-center p-6 md:p-12 xl:mb-[600px] lg:pl-20 text-white"
         >
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Selamat Datang di
           </h1>
-          <p className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
+          <p className="text-4xl md:text-8xl lg:text-10xl font-bold mb-4">
             BookNest
           </p>
           <p className="text-lg md:text-xl text-orange-100">
@@ -94,18 +132,27 @@ function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             onSubmit={handleSubmit}
-            className="w-full max-w-sm md:max-w-md lg:max-w-lg rounded-xl p-6 sm:p-8 lg:p-10 shadow-lg border border-gray-200 backdrop-blur-xl bg-white/70"
+            className="w-full max-w-sm md:max-w-md lg:max-w-lg rounded-xl p-6 sm:p-8 lg:p-10 shadow-md backdrop-blur-xl bg-orange-900/10"
           >
-            {message && (
-              <div className="mb-4 text-center text-red-500">{message}</div>
+            {message && ( // Pastikan message ditampilkan dengan benar
+              <div
+                className={`mb-4 text-center p-2 rounded ${
+                  !message.toLowerCase().includes("berhasil") &&
+                  !message.toLowerCase().includes("success")
+                    ? "text-red-700 bg-red-100"
+                    : "text-green-700 bg-green-100"
+                }`}
+              >
+                {message}
+              </div>
             )}
 
-            <h1 className="text-2xl font-semibold text-center mb-6">Masuk</h1>
+            <h1 className="text-3xl font-semibold text-center mb-6">Masuk</h1>
 
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-gray-900 text-sm font-medium mb-2"
+                className="block text-gray-900 text-md font-medium mb-2"
               >
                 Email
               </label>
@@ -123,7 +170,7 @@ function LoginPage() {
             <div className="mb-4">
               <label
                 htmlFor="password"
-                className="block text-gray-900 text-sm font-medium mb-2"
+                className="block text-gray-900 text-md font-medium mb-2"
               >
                 Kata Sandi
               </label>
@@ -161,11 +208,11 @@ function LoginPage() {
               Belum Punya Akun?
             </p>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center mb-4">
               <Link to="/register">
                 <button
                   type="button"
-                  className="w-full sm:w-40 text-emerald-900 border border-emerald-800 py-2 rounded-md hover:bg-emerald-700 hover:text-white transition text-lg"
+                  className="w-full sm:w-40 text-emerald-900 border border-emerald-800 py-2 rounded-md hover:bg-emerald-700 hover:text-white transition text-lg "
                 >
                   Daftar
                 </button>

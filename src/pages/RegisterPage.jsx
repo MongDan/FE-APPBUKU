@@ -22,7 +22,7 @@ export default function Register() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/register", {
+      const res = await fetch("https://be-appbuku-production.up.railway.app/register", {
         method: "POST",
         credentials: "include",
         headers: {
